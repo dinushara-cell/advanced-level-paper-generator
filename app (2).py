@@ -1,84 +1,53 @@
 import streamlit as st
 import docx
 from docx.shared import Pt, Inches
-from docx.enum.text import WD_ALIGN_PARAGRAPH
-from docx.oxml import OxmlElement
-from docx.oxml.ns import qn
 from google import genai
 import io
-import urllib.parse
 
-# --- පද්ධති සැකසුම් ---
-st.set_page_config(page_title="Universal AI Paper Generator Pro", page_icon="📝", layout="centered")
+# --- විෂයයන් සහ ඒවාට අදාළ Sample Prompts ---
+subject_prompts = {
+    "O/L Science (විද්‍යාව)": "10 ශ්‍රේණිය 'ආලෝකය' පාඩමේ වර්තනය සහ දර්පණ ඇසුරින් MCQ 10ක් සහ ව්‍යුහගත ප්‍රශ්නයක් සකසන්න.",
+    "O/L Mathematics (ගණිතය)": "11 ශ්‍රේණිය 'වර්ගජ සමීකරණ' පාඩම ඇසුරින් පියවර සහිතව විසඳිය යුතු ව්‍යුහගත ප්‍රශ්න 3ක් සකසන්න.",
+    "A/L Physics (භෞතික විද්‍යාව)": "ධාරා විද්‍යුතය පාඩමේ කිර්චොෆ් නියම ඇසුරින් විසඳිය යුතු MCQ 5ක් සහ ව්‍යුහගත ප්‍රශ්නයක් සකසන්න.",
+    "A/L Chemistry (රසායන විද්‍යාව)": "s, p, d ගොනුවේ මූලද්‍රව්‍ය ඇසුරින් රසායනික ගුණ විමසන MCQ 5ක් සහ ව්‍යුහගත ප්‍රශ්නයක් සකසන්න.",
+    "A/L Biology (ජීව විද්‍යාව)": "සෛල විද්‍යාව පාඩම ඇසුරින් අණුක ව්‍යුහය පිළිබඳ ප්‍රශ්න 5ක් සකසන්න.",
+    "Other": "මෙම විෂයට අදාළව වැදගත් පාඩම් මාතෘකා කිහිපයක් ඇතුළත් කර ප්‍රශ්න පත්‍රයක් සකසන්න."
+}
 
-# --- Session State ආරම්භ කිරීම ---
-if "free_credits" not in st.session_state:
-    st.session_state.free_credits = 2
+st.set_page_config(page_title="Universal AI Paper Generator", layout="centered")
+st.title("📝 Universal AI Paper Generator")
 
-st.title("📝 Universal AI Paper Generator Pro")
-st.caption("Commercial Version 3.3 | Stable Release")
-st.write("---")
+# විෂය තෝරා ගැනීම
+selected_subject = st.selectbox("📚 විෂය තෝරන්න:", list(subject_prompts.keys()))
 
-# --- සැකසුම් ---
-YOUR_WHATSAPP_NUMBER = "94771234567"
-VALID_ACCESS_CODE = "EXAMPRO2026"
-msg = "Hi Dinusha, මට Universal AI Paper Generator එක පාවිච්චි කරන්න Access Code එකක් ගන්න ඕනේ."
-whatsapp_url = f"https://wa.me/{YOUR_WHATSAPP_NUMBER}?text={urllib.parse.quote(msg)}"
+# තෝරාගත් විෂයට අදාළ default prompt එක ලබා ගැනීම
+default_prompt = subject_prompts.get(selected_subject, "ඔබේ ප්‍රශ්න පත්‍රය සඳහා විස්තරය මෙතැන ලියන්න...")
 
-# --- Sidebar Access Control ---
-st.sidebar.header("🔑 Access Control")
-input_code = st.sidebar.text_input("Access Code:", type="password")
-is_premium = (input_code == VALID_ACCESS_CODE)
+# Prompt එක Edit කිරීමට ඉඩ දීම
+prompt_text = st.text_area("✍️ ප්‍රශ්න පත්‍රයේ විස්තරය (Prompt):", value=default_prompt, height=150)
 
-if not is_premium:
-    if st.session_state.free_credits > 0:
-        st.sidebar.info(f"🎁 ඉතිරි නොමිලේ අවස්ථා: {st.session_state.free_credits}")
-    else:
-        st.error("⚠️ නොමිලේ අවස්ථා අවසන්!")
-        st.markdown(f'[💬 Get Premium Access via WhatsApp]({whatsapp_url})')
-        st.stop()
-else:
-    st.sidebar.success("🔒 Premium Access Active!")
+# ප්‍රශ්න පත්‍රය ජනනය කිරීමේ ශ්‍රිතය
+def generate_paper(prompt, sub):
+    api_key = st.secrets["GEMINI_API_KEY"]
+    client = genai.Client(api_key=api_key)
+    response = client.models.generate_content(
+        model='gemini-2.5-flash',
+        contents=f"You are a professional teacher. Create an exam paper for {sub}. {prompt}. Include marking scheme."
+    )
+    return response.text
 
-# --- UI කොටස ---
-col_sub, col_lang = st.columns(2)
-subject = col_sub.selectbox("📚 විෂය:", ["O/L Science (විද්‍යාව)", "O/L Mathematics (ගණිතය)", "A/L Physics (භෞතික විද්‍යාව)", "A/L Chemistry (රසායන විද්‍යාව)", "Other"])
-language = col_lang.selectbox("🌐 මාධ්‍යය:", ["Sinhala (සිංහල)", "English", "Tamil (தமிழ்)"])
-base_prompt = st.text_area("✍️ විස්තරය:", height=150)
-
-# --- ප්‍රධාන ශ්‍රිතය ---
-def generate_doc(prompt_text, with_diagrams, sub, lang):
-    try:
-        api_key = st.secrets["GEMINI_API_KEY"]
-        client = genai.Client(api_key=api_key)
-        final_prompt = f"Create an exam paper for {sub} in {lang}. {prompt_text}. Provide marking scheme at the end."
-        
-        response = client.models.generate_content(model='gemini-2.5-flash', contents=final_prompt)
-        
-        doc = docx.Document()
-        doc.add_paragraph(response.text)
-        bio = io.BytesIO()
-        doc.save(bio)
-        bio.seek(0)
-        return bio.getvalue()
-    except Exception as e:
-        return e
-
-# --- බොත්තම් සැකසුම (Spinners දෝෂ රහිතව) ---
-if st.button("📄 Generate Plain Paper"):
-    with st.spinner("⏳ පත්‍රය සකසමින් පවතී..."):
-        res = generate_doc(base_prompt, False, subject, language)
-        if isinstance(res, bytes):
-            if not is_premium: st.session_state.free_credits -= 1
-            st.download_button("📥 Download File", data=res, file_name="paper.docx")
-        else:
-            st.error(f"Error: {res}")
-
-if st.button("🖼️ Generate with Diagrams"):
-    with st.spinner("⏳ පත්‍රය සහ රූප සටහන් සකසමින් පවතී..."):
-        res = generate_doc(base_prompt, True, subject, language)
-        if isinstance(res, bytes):
-            if not is_premium: st.session_state.free_credits -= 1
-            st.download_button("📥 Download File", data=res, file_name="paper_diagrams.docx")
-        else:
-            st.error(f"Error: {res}")
+if st.button("📄 Generate Paper"):
+    with st.spinner("⏳ ප්‍රශ්න පත්‍රය සකසමින් පවතී..."):
+        try:
+            content = generate_paper(prompt_text, selected_subject)
+            doc = docx.Document()
+            doc.add_paragraph(content)
+            
+            bio = io.BytesIO()
+            doc.save(bio)
+            bio.seek(0)
+            
+            st.success("✅ සාර්ථකයි!")
+            st.download_button("📥 Download Word File", data=bio, file_name=f"{selected_subject}_Paper.docx")
+        except Exception as e:
+            st.error(f"❌ දෝෂයකි: {e}")
