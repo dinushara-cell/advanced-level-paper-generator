@@ -1,4 +1,4 @@
-import streamlit as str
+import streamlit as st
 import docx
 from docx.shared import Pt, Inches
 from docx.enum.text import WD_ALIGN_PARAGRAPH
@@ -8,23 +8,23 @@ from google import genai
 import io
 
 # --- වෙබ් පිටුවේ ප්‍රධාන පෙනුම සකස් කිරීම ---
-str.set_page_config(page_title="AI Powered Advanced Level Paper Generator", page_icon="⚙️", layout="centered")
+st.set_page_config(page_title="Gemini Physics Paper Generator", page_icon="⚙️", layout="centered")
 
-str.title("⚙️ AI Powered Advanced Level Paper Generator")
-str.subheader("👨‍💻 Developed by: Dinusha Ratnayake B.Sc (Pinnawala CC 2026)")
-str.write("---")
+st.title("⚙️ Gemini Advanced Physics Paper Generator")
+st.subheader("👨‍💻 Developed by: Dinusha Ratnayake B.Sc (දිනූෂ රත්නායක මයා)")
+st.write("---")
 
 # --- පරිශීලක අතුරුමුහුණත (GUI Elements) ---
-user_api_key = str.text_input("ඔබගේ Gemini API Key එක ඇතුලත් කරන්න (API Key):", type="password", placeholder="AIzaSy...")
+user_api_key = st.text_input("ඇතුලත් කරන්න ඔබගේ Gemini API Key එක (API Key):", type="password", placeholder="AIzaSy...")
 
 default_prompt = """උසස් පෙළ භෞතික විද්‍යාව (A/L Physics) විෂය නිර්දේශයට අනුව "ධාරා විද්‍යුතය" පාඩමේ කිර්චොෆ් නියම (Kirchhoff Laws) පදනම් කරගෙන රූප සටහන් ඇසුරින් විසඳිය යුතු බහුවරණ ප්‍රශ්න (MCQ) 5ක් සහ පරිපථ සටහනක් සහිත ව්‍යුහගත රචනා ප්‍රශ්නයක් (Structured Essay) සිංහල මාධ්‍යයෙන් සකස් කරන්න. පිළිතුරු පත්‍රය අවසානයට ඇතුලත් කරන්න. කිසිදු අමතර හැඳින්වීමක් නැතිව ප්‍රශ්න පත්‍රය පමණක් ලබාදෙන්න."""
 
-base_prompt = str.text_area("ඔබට අවශ්‍ය ප්‍රශ්න පත්‍රයේ විස්තරය (Prompt):", value=default_prompt, height=200)
+base_prompt = st.text_area("ඔබට අවශ්‍ය ප්‍රශ්න පත්‍රයේ විස්තරය (Prompt):", value=default_prompt, height=200)
 
-str.write("---")
-str.write("📥 ප්‍රශ්න පත්‍රය බාගත කරගැනීමට අවශ්‍ය ක්‍රමය තෝරන්න:")
+st.write("---")
+st.write("📥 ප්‍රශ්න පත්‍රය බාගත කරගැනීමට අවශ්‍ය ක්‍රමය තෝරන්න:")
 
-col1, col2 = str.columns(2)
+col1, col2 = st.columns(2)
 
 def set_cell_margins(cell, top=100, bottom=100, left=150, right=150):
     tcPr = cell._tc.get_or_add_tcPr()
@@ -38,11 +38,11 @@ def set_cell_margins(cell, top=100, bottom=100, left=150, right=150):
 
 def generate_word_document(prompt_text, with_diagrams):
     if not user_api_key.strip():
-        str.error("❌ කරුණාකර ප්‍රථමයෙන් ඔබගේ Gemini API Key එක ඇතුලත් කරන්න!")
+        st.error("❌ කරුණාකර ප්‍රථමයෙන් ඔබගේ Gemini API Key එක ඇතුලත් කරන්න!")
         return None
         
     if not prompt_text.strip():
-        str.error("❌ කරුණාකර ප්‍රශ්න පත්‍රයට අදාළ Prompt එක ඇතුලත් කරන්න!")
+        st.error("❌ කරුණාකර ප්‍රශ්න පත්‍රයට අදාළ Prompt එක ඇතුලත් කරන්න!")
         return None
 
     final_prompt = prompt_text
@@ -56,7 +56,7 @@ def generate_word_document(prompt_text, with_diagrams):
             model='gemini-2.5-flash',
             contents=final_prompt,
         )
-        exam_text = str(response.text)
+        exam_text = response.text
         
         # Word Document එක නිර්මාණය කිරීම
         doc = docx.Document()
@@ -118,23 +118,23 @@ def generate_word_document(prompt_text, with_diagrams):
         return bio.getvalue()
 
     except Exception as e:
-        str.error(f"❌ දෝෂයක් මතු විය: {str(e)}")
+        st.error(f"❌ දෝෂයක් මතු විය: {e}")
         return None
 
 # --- Plain Paper බොත්තම ක්‍රියාකාරීත්වය ---
 with col1:
-    if str.button("📄 Generate Plain Paper", use_container_width=True):
-        with str.spinner("⏳ ප්‍රශ්න පත්‍රය සකසමින් පවතී..."):
+    if st.button("📄 Generate Plain Paper", use_container_width=True):
+        with st.spinner("⏳ ප්‍රශ්න පත්‍රය සකසමින් පවතී..."):
             doc_bytes = generate_word_document(base_prompt, with_diagrams=False)
             if doc_bytes:
-                str.success("✅ ප්‍රශ්න පත්‍රය සාර්ථකව නිමවා ඇත!")
-                str.download_button(label="📥 Download Plain Word File", data=doc_bytes, file_name="Physics_Plain_Paper.docx", mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document", use_container_width=True)
+                st.success("✅ ප්‍රශ්න පත්‍රය සාර්ථකව නිමවා ඇත!")
+                st.download_button(label="📥 Download Plain Word File", data=doc_bytes, file_name="Physics_Plain_Paper.docx", mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document", use_container_width=True)
 
 # --- Diagram Paper බොත්තම ක්‍රියාකාරීත්වය ---
 with col2:
-    if str.button("🖼️ Generate with Diagrams", use_container_width=True):
+    if st.button("🖼️ Generate with Diagrams", use_container_width=True):
         with str.spinner("⏳ රූප රාමු සහිත ප්‍රශ්න පත්‍රය සකසමින් පවතී..."):
             doc_bytes = generate_word_document(base_prompt, with_diagrams=True)
             if doc_bytes:
-                str.success("✅ ප්‍රශ්න පත්‍රය සාර්ථකව නිමවා ඇත!")
-                str.download_button(label="📥 Download Diagram Word File", data=doc_bytes, file_name="Physics_Diagram_Paper.docx", mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document", use_container_width=True)
+                st.success("✅ ප්‍රශ්න පත්‍රය සාර්ථකව නිමවා ඇත!")
+                st.download_button(label="📥 Download Diagram Word File", data=doc_bytes, file_name="Physics_Diagram_Paper.docx", mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document", use_container_width=True)
