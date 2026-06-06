@@ -12,38 +12,47 @@ import urllib.parse
 st.set_page_config(page_title="Universal AI Paper Generator Pro", page_icon="📝", layout="centered")
 
 st.title("📝 Universal AI Paper Generator Pro")
-st.caption("Create Exam Papers for A/L & O/L Subjects in Any Language | Commercial Version 2.5")
+st.caption("Create Exam Papers for A/L & O/L Subjects in Any Language | Commercial Version 3.0")
 st.write("---")
 
 # --- ඔබේ තොරතුරු (මෙහි ඔබේ විස්තර වෙනස් කරන්න) ---
 YOUR_WHATSAPP_NUMBER = "94771234567"  # ඔබේ දුරකථන අංකය (94 රටේ කේතය සමඟ, බිංදුව නැතිව)
 VALID_ACCESS_CODE = "EXAMPRO2026"     # පාරිභෝගිකයන් සඳහා වන රහස් කේතය
 
+# --- Free Counter එක පවත්වාගෙන යාම (Session State) ---
+if "free_credits" not in st.session_state:
+    st.session_state.free_credits = 2  # නොමිලේ දෙන වාර ගණන
+
 # --- WhatsApp Link එක සෑදීම ---
 msg = "Hi Dinusha, මට Universal AI Paper Generator එක පාවිච්චි කරන්න Access Code එකක් ගන්න ඕනේ."
 encoded_msg = urllib.parse.quote(msg)
 whatsapp_url = f"https://wa.me/{YOUR_WHATSAPP_NUMBER}?text={encoded_msg}"
 
-# --- පරිශීලක අතුරුමුහුණත (Access Code Check) ---
+# --- පරිශීලක අතුරුමුහුණත (Access Control) ---
 st.sidebar.header("🔑 Access Control")
-input_code = st.sidebar.text_input("ඇතුලත් කරන්න ඔබගේ Access Code එක:", type="password", placeholder="Access Code...")
+input_code = st.sidebar.text_input("ඇතුලත් කරන්න ඔබගේ Access Code එක (Premium):", type="password", placeholder="Access Code...")
 
-if input_code != VALID_ACCESS_CODE:
-    st.warning("⚠️ කරුණාකර මෙම මෙවලම භාවිත කිරීම සඳහා නිවැරදි 'Access Code' එක ඇතුළත් කරන්න.")
-    st.info("ඔබ සතුව Access Code එකක් නොමැති නම් හෝ එය මිලදී ගැනීමට අවශ්‍ය නම් පහත බොත්තම හරහා අපව WhatsApp මඟින් සම්බන්ධ කරගන්න.")
-    
-    st.markdown(f'''
-    <a href="{whatsapp_url}" target="_blank">
-        <button style="background-color: #25D366; color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 5px; cursor: pointer; width: 100%;">
-            💬 Get Access Code via WhatsApp
-        </button>
-    </a>
-    ''', unsafe_allowed_html=True)
-    
-    st.stop()
+is_premium = (input_code == VALID_ACCESS_CODE)
 
-# --- කේතය නිවැරදි නම් පමණක් පහත ව්‍යාපාරික පැනලය විවෘත වේ ---
-st.success("🔒 Access Granted! සාර්ථකව සම්බන්ධ විය.")
+# --- ආරක්ෂණ පරීක්ෂාව (ලොක් කිරීමේ පද්ධතිය) ---
+if not is_premium:
+    if st.session_state.free_credits > 0:
+        st.sidebar.info(f"🎁 ඔබට නොමිලේ ප්‍රශ්න පත්‍ර {st.session_state.free_credits}ක් සැකසීමට අවස්ථාව ඇත.")
+    else:
+        st.error("⚠️ ඔබගේ නොමිලේ ලැබුණු අවස්ථා (2 Free Credits) අවසන් වී ඇත!")
+        st.info("අසීමිතව ප්‍රශ්න පත්‍ර සැකසීම සඳහා රු. 990ක මාසික දායකත්වය ලබාගන්න. මුදල් තැන්පත් කර, එම රිසිට්පත පහත බොත්තම හරහා අපගේ WhatsApp අංකයට එවන්න.")
+        
+        st.markdown(f'''
+        <a href="{whatsapp_url}" target="_blank">
+            <button style="background-color: #25D366; color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 5px; cursor: pointer; width: 100%;">
+                💬 Get Premium Access Code via WhatsApp
+            </button>
+        </a>
+        ''', unsafe_allowed_html=True)
+        
+        st.stop() # නොමිලේ වාර ඉවර නම් සහ කේතය වැරදි නම් පද්ධතිය මෙතනින් නතර වේ.
+else:
+    st.sidebar.success("🔒 Premium Access Active! ඔබට අසීමිතව ප්‍රශ්න පත්‍ර සකස් කළ හැක.")
 
 # --- විෂය සහ භාෂාව තෝරාගැනීමේ කොටස (Dropdowns) ---
 col_sub, col_lang = st.columns(2)
@@ -52,29 +61,12 @@ with col_sub:
     subject = st.selectbox(
         "📚 විෂය තෝරන්න (Select Subject):",
         [
-            # --- O/L Subjects ---
-            "O/L Science (විද්‍යාව)",
-            "O/L Mathematics (ගණිතය)",
-            "O/L History (ඉතිහාසය)",
-            "O/L Sinhala (සිංහල භාෂාව හා සාහිත්‍යය)",
-            "O/L English (ඉංග්‍රීසි භාෂාව)",
-            "O/L ICT (තොරතුරු හා සන්නිවේදන තාක්ෂණය)",
-            "O/L Commerce (ව්‍යාපාර හා ගිණුම්කරණ අධ්‍යයනය)",
-            "O/L Geography (භූගෝල විද්‍යාව)",
-            "O/L Health & Physical Education (සෞඛ්‍යය)",
-            
-            # --- A/L Subjects ---
-            "A/L Physics (භෞතික විද්‍යාව)",
-            "A/L Chemistry (රසායන විද්‍යාව)",
-            "A/L Combined Mathematics (සංයුක්ත ගණිතය)",
-            "A/L Biology (ජීව විද්‍යාව)",
-            "A/L ICT (තොරතුරු හා සන්නිවේදන තාක්ෂණය)",
-            "A/L History (ඉතිහාසය)",
-            "A/L Business Studies (ව්‍යාපාර අධ්‍යයනය)",
-            "A/L Accounting (ගිණුම්කරණය)",
-            "A/L Economics (ආර්ථික විද්‍යාව)",
-            
-            # --- Other ---
+            "O/L Science (විද්‍යාව)", "O/L Mathematics (ගණිතය)", "O/L History (ඉතිහාසය)",
+            "O/L Sinhala (සිංහල)", "O/L English (ඉංග්‍රීසි)", "O/L ICT (තොරතුරු තාක්ෂණය)",
+            "O/L Commerce (වාණිජ්‍යය)", "O/L Geography (භූගෝල විද්‍යාව)", "O/L Health (සෞඛ්‍යය)",
+            "A/L Physics (භෞතික විද්‍යාව)", "A/L Chemistry (රසායන විද්‍යාව)", "A/L Combined Mathematics (සංයුක්ත ගණිතය)",
+            "A/L Biology (ජීව විද්‍යාව)", "A/L ICT (තොරතුරු තාක්ෂණය)", "A/L History (ඉතිහාසය)",
+            "A/L Business Studies (ව්‍යාපාර අධ්‍යයනය)", "A/L Accounting (ගිණුම්කරණය)", "A/L Economics (ආර්ථික විද්‍යාව)",
             "Other (Mention in prompt)"
         ]
     )
@@ -85,15 +77,12 @@ with col_lang:
         ["Sinhala (සිංහල)", "English", "Tamil (தமிழ்)"]
     )
 
-# තෝරාගන්නා විෂය අනුව ස්වයංක්‍රීයව වෙනස් වන Prompt ආදර්ශයක් (Hints)
 placeholder_prompts = {
     "O/L Science (විද්‍යාව)": "9 ශ්‍රේණිය 'ප්‍රකාශ විද්‍යාව' පාඩමෙන් හෝ 10 ශ්‍රේණිය 'ආලෝකය' පාඩමේ වර්තනය සහ දර්පණ ඇසුරින් MCQ 10ක් සහ ව්‍යුහගත ප්‍රශ්නයක් සකසන්න...",
     "O/L Mathematics (ගණිතය)": "11 ශ්‍රේණිය 'වර්ගජ සමීකරණ' හෝ 'ත්‍රිකෝණමිතිය' පාඩම ඇසුරින් පියවර සහිතව විසඳිය යුතු ව්‍යුහගත ප්‍රශ්න 3ක් සකසන්න...",
-    "O/L History (ඉතිහාසය)": "10 ශ්‍රේණිය 'අනුරාධපුර රාජධානියේ ආරම්භය' පාඩම ඇසුරින් කෙටි ප්‍රශ්න 10ක් සහ රචනා ප්‍රශ්න 2ක් සකසන්න...",
     "A/L Physics (භෞතික විද්‍යාව)": "ධාරා විද්‍යුතය පාඩමේ කිර්චොෆ් නියම ඇසුරින් විසඳිය යුතු MCQ ප්‍රශ්න 5ක් සහ ව්‍යුහගත රචනා ප්‍රශ්නයක්..."
 }
 
-# Default hint එක ලබා ගැනීම (නැත්නම් පොදු එකක් පෙන්වීම)
 default_hint = placeholder_prompts.get(subject, "ඔබට අවශ්‍ය ප්‍රශ්න පත්‍රයේ මාතෘකාව, ප්‍රශ්න වර්ග (MCQ/Essay) සහ ප්‍රමාණය මෙතැන පැහැදිලිව ලියන්න...")
 
 base_prompt = st.text_area("✍️ ඔබට අවශ්‍ය ප්‍රශ්න පත්‍රයේ විස්තරය (Prompt):", value=default_hint, height=180)
@@ -120,7 +109,6 @@ def generate_word_document(prompt_text, with_diagrams, sub, lang):
         st.error("❌ System Error: Gemini API Key එක සකසා නැත.")
         return None
 
-    # AI එකට දෙන විධානය තෝරාගත් විෂය සහ භාෂාව අනුව ස්වයංක්‍රීයව හැඩගැස්වීම
     final_prompt = f"You are an expert school exam paper setter in Sri Lanka. Create an official exam paper for the subject '{sub}' in '{lang}' language. "
     final_prompt += f"Based on the user's specific request: {prompt_text}. "
     final_prompt += "Provide ONLY the exam paper text and the marking scheme/answers at the very end. No conversational intro or outro text. "
@@ -138,7 +126,6 @@ def generate_word_document(prompt_text, with_diagrams, sub, lang):
         
         doc = docx.Document()
         
-        # පිටුවේ මායිම් සැකසීම
         for section in doc.sections:
             section.top_margin = Inches(1)
             section.bottom_margin = Inches(1)
@@ -192,6 +179,11 @@ def generate_word_document(prompt_text, with_diagrams, sub, lang):
         bio = io.BytesIO()
         doc.save(bio)
         bio.seek(0)
+        
+        # --- ක්‍රෙඩිට් එකක් අඩු කිරීම (ප්‍රිමියම් නැති අයට පමණක්) ---
+        if not is_premium:
+            st.session_state.free_credits -= 1
+            
         return bio.getvalue()
 
     except Exception as e:
@@ -206,6 +198,7 @@ with col1:
             if doc_bytes:
                 st.success("✅ සූදානම්!")
                 st.download_button(label="📥 Download Word File", data=doc_bytes, file_name=f"{subject}_Paper.docx", mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document", use_container_width=True)
+                st.rerun() # තිරය අලුත් කර ක්‍රෙඩිට් ගණන යාවත්කාලීන කරයි
 
 # --- Diagram Paper බොත්තම ---
 with col2:
@@ -215,3 +208,4 @@ with col2:
             if doc_bytes:
                 st.success("✅ සූදානම්!")
                 st.download_button(label="📥 Download Diagram Word File", data=doc_bytes, file_name=f"{subject}_With_Diagrams_Paper.docx", mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document", use_container_width=True)
+                st.rerun() # තිරය අලුත් කර ක්‍රෙඩිට් ගණන යාවත්කාලීන කරයි
