@@ -23,7 +23,7 @@ if int(selected_grade) <= 9:
 elif int(selected_grade) in [10, 11]:
     available_streams = ["O/L"]
 else: # 12 සහ 13 සඳහා
-    available_streams = ["Science", "Mathematics", "Technology", "Arts", "Commerce"]
+    available_streams = ["A/L Biology", "A/L Maths", "A/L Tech", "A/L Arts", "A/L Commerce"]
 
 selected_stream = col2.selectbox("📂 විෂය ධාරාව:", available_streams)
 selected_medium = col3.selectbox("🌐 මාධ්‍යය:", languages)
