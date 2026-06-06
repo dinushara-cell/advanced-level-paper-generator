@@ -9,7 +9,7 @@ st.title("📝 Universal AI Paper Generator Pro")
 
 # --- දත්ත ලැයිස්තු ---
 grades = [str(i) for i in range(1, 14)]
-streams = ["Grade 6", "Grade 7", "Grade 8", "Grade 9", "Grade 10", "Grade 11", "A/L Bio", "A/L Maths", "A/L Tec", "A/L Arts", "A/L Commerce"]
+streams = ["Primary", "O/L", "A/L Bio", "A/L Maths", "A/L Tec", "A/L Arts", "A/L Commerce"]
 paper_types = ["MCQ only", "Structured only", "Essay only", "Mixed (Structured + Essay)"]
 languages = ["Sinhala", "English", "Tamil"]
 
