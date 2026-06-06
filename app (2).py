@@ -8,10 +8,10 @@ from google import genai
 import io
 
 # --- වෙබ් පිටුවේ ප්‍රධාන පෙනුම සකස් කිරීම ---
-st.set_page_config(page_title="Gemini Paper Generator", page_icon="⚙️", layout="centered")
+st.set_page_config(page_title="AI Paper Generator", page_icon="⚙️", layout="centered")
 
-st.title("⚙️ Gemini Paper Generator")
-st.subheader("👨‍💻 Developed by: Dinusha Ratnayake B.Sc (දිනූෂ රත්නායක)")
+st.title("⚙️ Advanced Paper Generator")
+st.subheader("👨‍💻 Developed by: Dinusha Ratnayake B.Sc")
 st.write("---")
 
 # --- පරිශීලක අතුරුමුහුණත (GUI Elements) ---
@@ -128,12 +128,12 @@ with col1:
             doc_bytes = generate_word_document(base_prompt, with_diagrams=False)
             if doc_bytes:
                 st.success("✅ ප්‍රශ්න පත්‍රය සාර්ථකව නිමවා ඇත!")
-                st.download_button(label="📥 Download Plain Word File", data=doc_bytes, file_name="Question_Plain_Paper.docx", mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document", use_container_width=True)
+                st.download_button(label="📥 Download Plain Word File", data=doc_bytes, file_name="AI_Generated_Plain_Paper.docx", mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document", use_container_width=True)
 
-# --- Diagram Paper බොත්තම ක්‍රියාකාරීත්වය ---
+# --- Diagram Paper බොත්තම ක්‍රියාකාරීත්වය (දෝෂය නිවැරදි කරන ලදී) ---
 with col2:
     if st.button("🖼️ Generate with Diagrams", use_container_width=True):
-        with str.spinner("⏳ රූප රාමු සහිත ප්‍රශ්න පත්‍රය සකසමින් පවතී..."):
+        with st.spinner("⏳ රූප රාමු සහිත ප්‍රශ්න පත්‍රය සකසමින් පවතී..."):
             doc_bytes = generate_word_document(base_prompt, with_diagrams=True)
             if doc_bytes:
                 st.success("✅ ප්‍රශ්න පත්‍රය සාර්ථකව නිමවා ඇත!")
