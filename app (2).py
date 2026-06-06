@@ -6,16 +6,44 @@ from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from google import genai
 import io
+import urllib.parse
 
 # --- වෙබ් පිටුවේ ප්‍රධාන පෙනුම සකස් කිරීම ---
-st.set_page_config(page_title="AI Paper Generator", page_icon="⚙️", layout="centered")
+st.set_page_config(page_title="A/L Physics Paper Generator Pro", page_icon="📝", layout="centered")
 
-st.title("⚙️ Advanced Paper Generator")
-st.subheader("👨‍💻 Developed by: Dinusha Ratnayake B.Sc")
+st.title("📝 A/L Physics Paper Generator Pro")
+st.caption("Developed by Dinusha Ratnayake B.Sc | Commercial Version 1.0")
 st.write("---")
 
-# --- පරිශීලක අතුරුමුහුණත (GUI Elements) ---
-user_api_key = st.text_input("ඔබගේ Gemini API Key එක ඇතුලත් කරන්න  (API Key):", type="password", placeholder="AIzaSy...")
+# --- ඔබේ තොරතුරු (මෙතන ඔබේ විස්තර වෙනස් කරන්න) ---
+YOUR_WHATSAPP_NUMBER = "94771234567"  # ඔබේ දුරකථන අංකය (94 රටේ කේතය සමඟ, බිංදුව නැතිව)
+VALID_ACCESS_CODE = "PHYSICS2026"     # ඔබ පාරිභෝගිකයන්ට දෙන රහස් කේතය (Password)
+
+# --- WhatsApp Link එක සෑදීම ---
+msg = "Hi Dinusha, මට Paper Generator එක පාවිච්චි කරන්න Access Code එකක් ගන්න ඕනේ."
+encoded_msg = urllib.parse.quote(msg)
+whatsapp_url = f"https://wa.me/{YOUR_WHATSAPP_NUMBER}?text={encoded_msg}"
+
+# --- පරිශීលක අතුරුමුහුණත (Access Code Check) ---
+st.sidebar.header("🔑🔑 Access Control")
+input_code = st.sidebar.text_input("ඇතුලත් කරන්න ඔබගේ Access Code එක:", type="password", placeholder="කේතය මෙතන ලියන්න...")
+
+if input_code != VALID_ACCESS_CODE:
+    st.warning("⚠️ කරුණාකර මෙම මෙවලම භාවිත කිරීම සඳහා නිවැරදි 'Access Code' එක ඇතුළත් කරන්න.")
+    st.info("ඔබ සතුව Access Code එකක් නොමැති නම් හෝ එය ලබා ගැනීමට අවශ්‍ය නම් පහත බොත්තම හරහා අපව WhatsApp මඟින් සම්බන්ධ කරගන්න.")
+    
+    st.markdown(f'''
+    <a href="{whatsapp_url}" target="_blank">
+        <button style="background-color: #25D366; color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 5px; cursor: pointer; width: 100%;">
+            💬 Get Access Code via WhatsApp
+        </button>
+    </a>
+    ''', unsafe_allowed_html=True)
+    
+    st.stop() # කේතය නිවැරදි නැත්නම් වෙබ් ඇප් එකේ ඉතිරි කොටස පෙන්වීම නතර කරයි.
+
+# --- කේතය නිවැරදි නම් පමණක් පහත කොටස ක්‍රියාත්මක වේ ---
+st.success("🔒 Access Granted! ඔබට දැන් ප්‍රශ්න පත්‍ර සකස් කළ හැක.")
 
 default_prompt = """උසස් පෙළ භෞතික විද්‍යාව (A/L Physics) විෂය නිර්දේශයට අනුව "ධාරා විද්‍යුතය" පාඩමේ කිර්චොෆ් නියම (Kirchhoff Laws) පදනම් කරගෙන රූප සටහන් ඇසුරින් විසඳිය යුතු බහුවරණ ප්‍රශ්න (MCQ) 5ක් සහ පරිපථ සටහනක් සහිත ව්‍යුහගත රචනා ප්‍රශ්නයක් (Structured Essay) සිංහල මාධ්‍යයෙන් සකස් කරන්න. පිළිතුරු පත්‍රය අවසානයට ඇතුලත් කරන්න. කිසිදු අමතර හැඳින්වීමක් නැතිව ප්‍රශ්න පත්‍රය පමණක් ලබාදෙන්න."""
 
@@ -37,12 +65,11 @@ def set_cell_margins(cell, top=100, bottom=100, left=150, right=150):
     tcPr.append(tcMar)
 
 def generate_word_document(prompt_text, with_diagrams):
-    if not user_api_key.strip():
-        st.error("❌ කරුණාකර ප්‍රථමයෙන් ඔබගේ Gemini API Key එක ඇතුලත් කරන්න!")
-        return None
-        
-    if not prompt_text.strip():
-        st.error("❌ කරුණාකර ප්‍රශ්න පත්‍රයට අදාළ Prompt එක ඇතුලත් කරන්න!")
+    # Streamlit Secrets එකෙන් ආරක්ෂිතව API Key එක ලබාගැනීම
+    try:
+        api_key = st.secrets["GEMINI_API_KEY"]
+    except Exception:
+        st.error("❌ System Error: Gemini API Key එක සකසා නැත. කරුණාකර Streamlit Cloud Dashboard එක පරීක්ෂා කරන්න.")
         return None
 
     final_prompt = prompt_text
@@ -50,15 +77,13 @@ def generate_word_document(prompt_text, with_diagrams):
         final_prompt += " (IMPORTANT: For questions that need circuits, graphs, or diagrams, explicitly add a line '[DIAGRAM: Describe what should be drawn here]' right after the question text, so I can format it properly.)"
 
     try:
-        # Gemini API ඇමතීම
-        client = genai.Client(api_key=user_api_key.strip())
+        client = genai.Client(api_key=api_key)
         response = client.models.generate_content(
             model='gemini-2.5-flash',
             contents=final_prompt,
         )
         exam_text = response.text
         
-        # Word Document එක නිර්මාණය කිරීම
         doc = docx.Document()
         
         for section in doc.sections:
@@ -111,14 +136,13 @@ def generate_word_document(prompt_text, with_diagrams):
                     run.bold = True
                     run.font.size = Pt(14)
                     
-        # බ්‍රවුසරය හරහා ඩවුන්ලෝඩ් කිරීමට මතකය (Buffer) වෙත සේව් කිරීම
         bio = io.BytesIO()
         doc.save(bio)
         bio.seek(0)
         return bio.getvalue()
 
     except Exception as e:
-        st.error(f"❌ දෝෂයක් මතු විය: {e}")
+        st.error(f"❌ දෝෂයක් mthe විය: {e}")
         return None
 
 # --- Plain Paper බොත්තම ක්‍රියාකාරීත්වය ---
@@ -128,9 +152,9 @@ with col1:
             doc_bytes = generate_word_document(base_prompt, with_diagrams=False)
             if doc_bytes:
                 st.success("✅ ප්‍රශ්න පත්‍රය සාර්ථකව නිමවා ඇත!")
-                st.download_button(label="📥 Download Plain Word File", data=doc_bytes, file_name="AI_Generated_Plain_Paper.docx", mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document", use_container_width=True)
+                st.download_button(label="📥 Download Plain Word File", data=doc_bytes, file_name="Physics_Plain_Paper.docx", mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document", use_container_width=True)
 
-# --- Diagram Paper බොත්තම ක්‍රියාකාරීත්වය (දෝෂය නිවැරදි කරන ලදී) ---
+# --- Diagram Paper බොත්තම ක්‍රියාකාරීත්වය ---
 with col2:
     if st.button("🖼️ Generate with Diagrams", use_container_width=True):
         with st.spinner("⏳ රූප රාමු සහිත ප්‍රශ්න පත්‍රය සකසමින් පවතී..."):
