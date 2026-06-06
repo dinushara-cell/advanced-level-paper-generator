@@ -8,14 +8,14 @@ from google import genai
 import io
 
 # --- වෙබ් පිටුවේ ප්‍රධාන පෙනුම සකස් කිරීම ---
-st.set_page_config(page_title="Gemini Physics Paper Generator", page_icon="⚙️", layout="centered")
+st.set_page_config(page_title="Gemini Paper Generator", page_icon="⚙️", layout="centered")
 
-st.title("⚙️ Gemini Advanced Physics Paper Generator")
-st.subheader("👨‍💻 Developed by: Dinusha Ratnayake B.Sc (දිනූෂ රත්නායක මයා)")
+st.title("⚙️ Gemini Paper Generator")
+st.subheader("👨‍💻 Developed by: Dinusha Ratnayake B.Sc (දිනූෂ රත්නායක)")
 st.write("---")
 
 # --- පරිශීලක අතුරුමුහුණත (GUI Elements) ---
-user_api_key = st.text_input("ඇතුලත් කරන්න ඔබගේ Gemini API Key එක (API Key):", type="password", placeholder="AIzaSy...")
+user_api_key = st.text_input("ඔබගේ Gemini API Key එක ඇතුලත් කරන්න  (API Key):", type="password", placeholder="AIzaSy...")
 
 default_prompt = """උසස් පෙළ භෞතික විද්‍යාව (A/L Physics) විෂය නිර්දේශයට අනුව "ධාරා විද්‍යුතය" පාඩමේ කිර්චොෆ් නියම (Kirchhoff Laws) පදනම් කරගෙන රූප සටහන් ඇසුරින් විසඳිය යුතු බහුවරණ ප්‍රශ්න (MCQ) 5ක් සහ පරිපථ සටහනක් සහිත ව්‍යුහගත රචනා ප්‍රශ්නයක් (Structured Essay) සිංහල මාධ්‍යයෙන් සකස් කරන්න. පිළිතුරු පත්‍රය අවසානයට ඇතුලත් කරන්න. කිසිදු අමතර හැඳින්වීමක් නැතිව ප්‍රශ්න පත්‍රය පමණක් ලබාදෙන්න."""
 
