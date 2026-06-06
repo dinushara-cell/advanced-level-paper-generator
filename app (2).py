@@ -13,10 +13,19 @@ streams = ["Primary", "O/L", "A/L Bio", "A/L Maths", "A/L Tec", "A/L Arts", "A/L
 paper_types = ["MCQ only", "Structured only", "Essay only", "Mixed (Structured + Essay)"]
 languages = ["Sinhala", "English", "Tamil"]
 
-# --- තේරීම් මෙනු ---
+# --- ශ්‍රේණිය අනුව විෂය ධාරා තේරීම ---
 col1, col2, col3 = st.columns(3)
 selected_grade = col1.selectbox("🎓 ශ්‍රේණිය:", grades)
-selected_stream = col2.selectbox("📂 විෂය ධාරාව:", streams)
+
+# ශ්‍රේණිය මත පදනම්ව විෂය ධාරා ලැයිස්තුව තීරණය කිරීම
+if int(selected_grade) <= 9:
+    available_streams = ["Primary"]
+elif int(selected_grade) in [10, 11]:
+    available_streams = ["O/L"]
+else: # 12 සහ 13 සඳහා
+    available_streams = ["Science", "Mathematics", "Technology", "Arts", "Commerce"]
+
+selected_stream = col2.selectbox("📂 විෂය ධාරාව:", available_streams)
 selected_medium = col3.selectbox("🌐 මාධ්‍යය:", languages)
 
 col4, col5 = st.columns(2)
