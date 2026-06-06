@@ -21,30 +21,24 @@ default_prompt = f"{grade} ශ්‍රේණිය සඳහා {subject} ව�
 prompt_text = st.text_area("✍️ ප්‍රශ්න පත්‍රයේ විස්තරය (Prompt):", value=default_prompt, height=150)
 
 # ප්‍රශ්න පත්‍රය ජනනය කිරීමේ ශ්‍රිතය
+import time
+
 def generate_paper(prompt, grade, sub, med):
     api_key = st.secrets["GEMINI_API_KEY"]
     client = genai.Client(api_key=api_key)
-    response = client.models.generate_content(
-        model='gemini-2.5-flash',
-        contents=f"You are a professional teacher in Sri Lanka. Create a formal exam paper for Grade {grade}, Subject {sub}, Medium {med}. {prompt}. Include marking scheme at the end."
-    )
-    return response.text
-
-if st.button("📄 Generate Paper"):
-    if not grade or not subject or not medium:
-        st.warning("⚠️ කරුණාකර ශ්‍රේණිය, විෂය සහ මාධ්‍ය ඇතුළත් කරන්න.")
-    else:
-        with st.spinner("⏳ ප්‍රශ්න පත්‍රය සකසමින් පවතී..."):
-            try:
-                content = generate_paper(prompt_text, grade, subject, medium)
-                doc = docx.Document()
-                doc.add_paragraph(content)
-                
-                bio = io.BytesIO()
-                doc.save(bio)
-                bio.seek(0)
-                
-                st.success("✅ ප්‍රශ්න පත්‍රය සාර්ථකව ජනනය විය!")
-                st.download_button("📥 Download Word File", data=bio, file_name=f"{subject}_Grade{grade}_Paper.docx")
-            except Exception as e:
+    
+    # Retry logic එක
+    for attempt in range(3): 
+        try:
+            response = client.models.generate_content(
+                model='gemini-2.0-flash', # අවශ්‍ය නම් මෙතැන මාදිලිය වෙනස් කරන්න
+                contents=f"You are a professional teacher in Sri Lanka. Create a formal exam paper for Grade {grade}, Subject {sub}, Medium {med}. {prompt}. Include marking scheme at the end."
+            )
+            return response.text
+        except Exception as e:
+            if "503" in str(e) and attempt < 2:
+                time.sleep(5) # තත්පර 5ක් ඉඳලා නැවත උත්සාහ කරන්න
+                continue
+            else:
+                raise e # තෙවන වරත් බැරි නම් දෝෂය පෙන්වන්න
                 st.error(f"❌ දෝෂයකි: {e}")
