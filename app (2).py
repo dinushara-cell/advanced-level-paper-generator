@@ -128,7 +128,7 @@ with col1:
             doc_bytes = generate_word_document(base_prompt, with_diagrams=False)
             if doc_bytes:
                 st.success("✅ ප්‍රශ්න පත්‍රය සාර්ථකව නිමවා ඇත!")
-                st.download_button(label="📥 Download Plain Word File", data=doc_bytes, file_name="Physics_Plain_Paper.docx", mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document", use_container_width=True)
+                st.download_button(label="📥 Download Plain Word File", data=doc_bytes, file_name="Question_Plain_Paper.docx", mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document", use_container_width=True)
 
 # --- Diagram Paper බොත්තම ක්‍රියාකාරීත්වය ---
 with col2:
