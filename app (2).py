@@ -16,7 +16,7 @@ st.caption("Create Exam Papers for Any Subject in Any Language | Commercial Vers
 st.write("---")
 
 # --- ඔබේ තොරතුරු (මෙහි ඔබේ විස්තර වෙනස් කරන්න) ---
-YOUR_WHATSAPP_NUMBER = "94771234567"  # ඔබේ දුරකථන අංකය (94 රටේ කේතය සමඟ, බිංදුව නැතිව)
+YOUR_WHATSAPP_NUMBER = "94712382306"  # ඔබේ දුරකථන අංකය (94 රටේ කේතය සමඟ, බිංදුව නැතිව)
 VALID_ACCESS_CODE = "EXAMPRO2026"     # පාරිභෝගිකයන් සඳහා වන නව රහස් කේතය
 
 # --- WhatsApp Link එක සෑදීම ---
