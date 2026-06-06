@@ -82,4 +82,4 @@ if st.button("📄 Generate Paper"):
                 st.download_button("📥 Download Word File", data=res, file_name=f"{sub}_Grade{gr}_Paper.docx")
             else:
                 st.error(f"❌ දෝෂයකි: {res}")
-                st.info("පද්ධතියේ තාවකාලික තදබදයක් තිබිය හැක. කරුණාකර තත්පර කිහිපයකින් නැවත උත්සාහ කරන්න.")
+                st.info("පද්ධතියේ තාවකාලික තදබදයක් තිබිය හැක. කරුණාකර පැය කිහිපයකින් නැවත උත්සාහ කරන්න.")
