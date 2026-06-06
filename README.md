@@ -3,7 +3,7 @@
 මෙමඟින් Google Gemini AI සහ Python තාක්ෂණය භාවිත කර උසස් පෙළ භෞතික විද්‍යාව ප්‍රශ්න පත්‍ර ඉතා ඉක්මනින් සකසා, සෘජුවම නිවැරදිව හැඩගැස්වූ Microsoft Word (.docx) ගොනුවක් ලෙස බාගත කරගත හැක. 
 
 ### 🚀 සෘජුවම වැඩසටහන ක්‍රියාත්මක කිරීමට පහත බටන් එක ක්ලික් කරන්න:
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)]([ඔබ සකස් කරගත් Colab ලින්ක් එක මෙතනට Paste කරන්න])
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)]([[ඔබ සකස් කරගත් Colab ලින්ක් එක මෙතනට Paste කරන්න]](https://colab.research.google.com/github/dinushara-cell/advanced-level-paper-generator/blob/main/Untitled3%20(2).ipynb))
 
 ---
 
