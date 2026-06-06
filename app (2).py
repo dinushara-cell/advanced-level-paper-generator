@@ -8,9 +8,9 @@ from google import genai
 import io
 
 # --- වෙබ් පිටුවේ ප්‍රධාන පෙනුම සකස් කිරීම ---
-str.set_page_config(page_title="Gemini Physics Paper Generator", page_icon="⚙️", layout="centered")
+str.set_page_config(page_title="AI Powered Advanced Level Paper Generator", page_icon="⚙️", layout="centered")
 
-str.title("⚙️ Gemini Advanced Level Paper Generator")
+str.title("⚙️ AI Powered Advanced Level Paper Generator")
 str.subheader("👨‍💻 Developed by: Dinusha Ratnayake B.Sc (Pinnawala CC 2026)")
 str.write("---")
 
