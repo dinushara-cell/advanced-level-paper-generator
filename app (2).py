@@ -12,12 +12,12 @@ import urllib.parse
 st.set_page_config(page_title="Universal AI Paper Generator Pro", page_icon="📝", layout="centered")
 
 st.title("📝 Universal AI Paper Generator Pro")
-st.caption("Create Exam Papers for Any Subject in Any Language | Commercial Version 2.0")
+st.caption("Create Exam Papers for A/L & O/L Subjects in Any Language | Commercial Version 2.5")
 st.write("---")
 
 # --- ඔබේ තොරතුරු (මෙහි ඔබේ විස්තර වෙනස් කරන්න) ---
-YOUR_WHATSAPP_NUMBER = "94712382306"  # ඔබේ දුරකථන අංකය (94 රටේ කේතය සමඟ, බිංදුව නැතිව)
-VALID_ACCESS_CODE = "EXAMPRO2026"     # පාරිභෝගිකයන් සඳහා වන නව රහස් කේතය
+YOUR_WHATSAPP_NUMBER = "94771234567"  # ඔබේ දුරකථන අංකය (94 රටේ කේතය සමඟ, බිංදුව නැතිව)
+VALID_ACCESS_CODE = "EXAMPRO2026"     # පාරිභෝගිකයන් සඳහා වන රහස් කේතය
 
 # --- WhatsApp Link එක සෑදීම ---
 msg = "Hi Dinusha, මට Universal AI Paper Generator එක පාවිච්චි කරන්න Access Code එකක් ගන්න ඕනේ."
@@ -45,13 +45,38 @@ if input_code != VALID_ACCESS_CODE:
 # --- කේතය නිවැරදි නම් පමණක් පහත ව්‍යාපාරික පැනලය විවෘත වේ ---
 st.success("🔒 Access Granted! සාර්ථකව සම්බන්ධ විය.")
 
-# --- විෂය සහ භාෂාව තෝරාගැනීමේ කොටස (Dynamic Dropdowns) ---
+# --- විෂය සහ භාෂාව තෝරාගැනීමේ කොටස (Dropdowns) ---
 col_sub, col_lang = st.columns(2)
 
 with col_sub:
     subject = st.selectbox(
         "📚 විෂය තෝරන්න (Select Subject):",
-        ["Physics", "Chemistry", "Combined Mathematics", "Biology", "ICT", "History", "Business Studies", "Accounting", "Economics", "General English", "Other (Mention in prompt)"]
+        [
+            # --- O/L Subjects ---
+            "O/L Science (විද්‍යාව)",
+            "O/L Mathematics (ගණිතය)",
+            "O/L History (ඉතිහාසය)",
+            "O/L Sinhala (සිංහල භාෂාව හා සාහිත්‍යය)",
+            "O/L English (ඉංග්‍රීසි භාෂාව)",
+            "O/L ICT (තොරතුරු හා සන්නිවේදන තාක්ෂණය)",
+            "O/L Commerce (ව්‍යාපාර හා ගිණුම්කරණ අධ්‍යයනය)",
+            "O/L Geography (භූගෝල විද්‍යාව)",
+            "O/L Health & Physical Education (සෞඛ්‍යය)",
+            
+            # --- A/L Subjects ---
+            "A/L Physics (භෞතික විද්‍යාව)",
+            "A/L Chemistry (රසායන විද්‍යාව)",
+            "A/L Combined Mathematics (සංයුක්ත ගණිතය)",
+            "A/L Biology (ජීව විද්‍යාව)",
+            "A/L ICT (තොරතුරු හා සන්නිවේදන තාක්ෂණය)",
+            "A/L History (ඉතිහාසය)",
+            "A/L Business Studies (ව්‍යාපාර අධ්‍යයනය)",
+            "A/L Accounting (ගිණුම්කරණය)",
+            "A/L Economics (ආර්ථික විද්‍යාව)",
+            
+            # --- Other ---
+            "Other (Mention in prompt)"
+        ]
     )
 
 with col_lang:
@@ -60,15 +85,15 @@ with col_lang:
         ["Sinhala (සිංහල)", "English", "Tamil (தமிழ்)"]
     )
 
-# තෝරාගන්නා විෂය අනුව ස්වයංක්‍රීයව වෙනස් වන Prompt ආදර්ශයක්
+# තෝරාගන්නා විෂය අනුව ස්වයංක්‍රීයව වෙනස් වන Prompt ආදර්ශයක් (Hints)
 placeholder_prompts = {
-    "Physics": "ධාරා විද්‍යුතය පාඩමේ කිර්චොෆ් නියම ඇසුරින් විසඳිය යුතු MCQ ප්‍රශ්න 5ක් සහ ව්‍යුහගත රචනා ප්‍රශ්නයක්...",
-    "Chemistry": "රදර්ෆර්ඩ්ගේ පරමාණුක ආකෘතිය සහ ක්වොන්ටම් අංක පදනම් කරගත් MCQ ප්‍රශ්න 5ක් සහ රචනා ප්‍රශ්නයක්...",
-    "Combined Mathematics": "සන්නිකර්ෂණය සහ සීමාවන් (Limits) පාඩම් ඇසුරින් ව්‍යුහගත රචනා ප්‍රශ්න 3ක්...",
-    "Biology": "ශාක පටක සහ ප්‍රභාසංශ්ලේෂණය පාඩම් ඇසුරින් බහුවරණ ප්‍රශ්න 5ක් සහ ව්‍යුහගත ප්‍රශ්නයක්...",
-    "ICT": "දත්ත සමුදා කළමනාකරණ පද්ධති (DBMS) සහ SQL Queries ඇසුරින් ව්‍යුහගත ප්‍රශ්න පත්‍රයක්..."
+    "O/L Science (විද්‍යාව)": "9 ශ්‍රේණිය 'ප්‍රකාශ විද්‍යාව' පාඩමෙන් හෝ 10 ශ්‍රේණිය 'ආලෝකය' පාඩමේ වර්තනය සහ දර්පණ ඇසුරින් MCQ 10ක් සහ ව්‍යුහගත ප්‍රශ්නයක් සකසන්න...",
+    "O/L Mathematics (ගණිතය)": "11 ශ්‍රේණිය 'වර්ගජ සමීකරණ' හෝ 'ත්‍රිකෝණමිතිය' පාඩම ඇසුරින් පියවර සහිතව විසඳිය යුතු ව්‍යුහගත ප්‍රශ්න 3ක් සකසන්න...",
+    "O/L History (ඉතිහාසය)": "10 ශ්‍රේණිය 'අනුරාධපුර රාජධානියේ ආරම්භය' පාඩම ඇසුරින් කෙටි ප්‍රශ්න 10ක් සහ රචනා ප්‍රශ්න 2ක් සකසන්න...",
+    "A/L Physics (භෞතික විද්‍යාව)": "ධාරා විද්‍යුතය පාඩමේ කිර්චොෆ් නියම ඇසුරින් විසඳිය යුතු MCQ ප්‍රශ්න 5ක් සහ ව්‍යුහගත රචනා ප්‍රශ්නයක්..."
 }
 
+# Default hint එක ලබා ගැනීම (නැත්නම් පොදු එකක් පෙන්වීම)
 default_hint = placeholder_prompts.get(subject, "ඔබට අවශ්‍ය ප්‍රශ්න පත්‍රයේ මාතෘකාව, ප්‍රශ්න වර්ග (MCQ/Essay) සහ ප්‍රමාණය මෙතැන පැහැදිලිව ලියන්න...")
 
 base_prompt = st.text_area("✍️ ඔබට අවශ්‍ය ප්‍රශ්න පත්‍රයේ විස්තරය (Prompt):", value=default_hint, height=180)
@@ -96,12 +121,12 @@ def generate_word_document(prompt_text, with_diagrams, sub, lang):
         return None
 
     # AI එකට දෙන විධානය තෝරාගත් විෂය සහ භාෂාව අනුව ස්වයංක්‍රීයව හැඩගැස්වීම
-    final_prompt = f"You are an expert exam paper setter. Create an official exam paper for the subject '{sub}' in '{lang}' language. "
+    final_prompt = f"You are an expert school exam paper setter in Sri Lanka. Create an official exam paper for the subject '{sub}' in '{lang}' language. "
     final_prompt += f"Based on the user's specific request: {prompt_text}. "
     final_prompt += "Provide ONLY the exam paper text and the marking scheme/answers at the very end. No conversational intro or outro text. "
     
     if with_diagrams:
-        final_prompt += " (IMPORTANT: For any questions that strictly require circuits, graphs, or biological/chemical structures, explicitly add a line '[DIAGRAM: Describe what should be drawn here]' right after the question text, so I can format it properly.)"
+        final_prompt += " (IMPORTANT: For any questions that strictly require circuits, graphs, geometry, or biological/chemical structures, explicitly add a line '[DIAGRAM: Describe what should be drawn here]' right after the question text, so I can format it properly.)"
 
     try:
         client = genai.Client(api_key=api_key)
