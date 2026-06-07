@@ -50,7 +50,7 @@ def generate_doc_with_retry(prompt, gr, stream, sub, med, num, ptype):
             try:
                 # මෙහි Model එක gemini-1.5-flash ලෙස වෙනස් කිරීම වඩාත් ස්ථාවරයි (අවශ්‍ය නම් gemini-2.5-flash ලෙසම තබන්න)
                 response = client.models.generate_content(
-                    model='gemini-1.5-flash', 
+                    model='gemini-1.5-flash-latest', 
                     contents=final_prompt
                 )
                 
