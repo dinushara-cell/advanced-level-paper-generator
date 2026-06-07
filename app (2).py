@@ -45,7 +45,7 @@ prompt_text = st.text_area("✍️ විස්තරය (Prompt):", value=defau
 
 # --- Retry Logic සහ GenerativeModel ශ්‍රිතය ---
 def generate_doc_with_retry(prompt, gr, stream, sub, med, num, ptype):
-    model = genai.GenerativeModel('gemini-1.5-flash') # ස්ථාවර මාදිලිය
+    model = genai.GenerativeModel('gemini-1.5-flash-latest') # ස්ථාවර මාදිලිය
     final_prompt = f"Create a formal exam paper. Grade: {gr}, Stream: {stream}, Subject: {sub}, Language: {med}, Type: {ptype}, Count: {num}. Prompt: {prompt}. Include marking scheme at the end."
     
     for attempt in range(3):
